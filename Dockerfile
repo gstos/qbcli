@@ -10,11 +10,8 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire source
-COPY ./cmd ./cmd
-COPY ./internal ./internal
+COPY . .
 
-# Build the binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o qbcli ./main.go
 
 # ------------------------------
@@ -22,17 +19,25 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o qbcli ./main.go
 # ------------------------------
 FROM alpine:latest
 
-# Add a user (optional but recommended)
-RUN adduser -D -g '' appuser
-
 # Copy the compiled binary from the builder stage
 COPY --from=builder /app/qbcli /usr/local/bin/qbcli
+RUN chmod +x /usr/local/bin/qbcli
+
+# Create a directory structure for caching session cookies
+RUN mkdir -p  /var/cache/qbcli
 
 # Set ownership and permissions (optional)
-RUN chown appuser /usr/local/bin/qbcli
+RUN adduser -D -g '' appuser && \
+    chown appuser /usr/local/bin/qbcli && \
+    chown appuser /var/cache/qbcli
 
-# Use non-root user
 USER appuser
 
-# Set default command
+VOLUME /var/cache/qbcli
+
+ENV QBCLI_CACHE="/var/cache/qbcli" \
+    QBCLI_HOST_URL="" \
+    QBCLI_USERNAME="" \
+    QBCLI_PASSWORD=""
+
 ENTRYPOINT ["qbcli"]

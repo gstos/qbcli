@@ -78,6 +78,7 @@ Example `.env`:
 QBCLI_HOST=http://localhost:8080
 QBCLI_USERNAME=admin
 QBCLI_PASSWORD=adminadmin
+QBCLI_CACHE
 ```
 
 Notice that command line arguments override environment settings.
@@ -119,7 +120,7 @@ Versioning and pre-compiled binaries to be implemented in this repository soon.
 
 ## License
 
-MIT ©
+MIT
 
 ## Disclaimers
 
@@ -151,3 +152,7 @@ Contributions and new features are very welcome.
 Finally, I neither endorse nor have thoroughly audited the tools mentioned above. 
 Use them at your own risk and comply with your local regulations, 
 especially regarding copyright.
+
+It is recommended that a dedicated virtual machine is used 
+if your settings are based on the `docker-compose.yml` provided for testing purposes only,
+as other services used require privileged access to network stack and docker socket.

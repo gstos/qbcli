@@ -17,9 +17,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o qbcli ./main.go
 FROM qmcgaw/gluetun:latest
 
 COPY --from=builder /app/qbcli /usr/local/bin/qbcli
-
 RUN chmod +x /usr/local/bin/qbcli
 
-ENV QBCLI_HOST_URL="" \
+RUN mkdir -p  /var/cache/qbcli
+VOLUME /var/cache/qbcli
+
+ENV QBCLI_CACHE="/var/cache/qbcli" \
+    QBCLI_HOST_URL="" \
     QBCLI_USERNAME="" \
     QBCLI_PASSWORD=""

@@ -1,8 +1,21 @@
+# IMPORTANT: Move this file to the root directory of the project or adjust the Dockerfile path to run it properly
+# See below for security and other concerns
+# https://github.com/gstos/qbcli/blob/main/README.md#disclaimers
+
+# No reason to define network subnet, unless you are planning to add more services
+networks:
+  internal:
+    name: internal
+    ipam:
+      config:
+        - subnet: 172.39.0.0/24
+
 services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     environment:
+      # Adjust this for your needs; this impacts access to shared volumes
       - PUID=9999
       - PGID=9999
       - TZ=Etc/UTC
@@ -17,8 +30,10 @@ services:
       gluetun:
         condition: service_healthy
         restart: true
+    # Required for all containers accessing the internet via this VPN service
     network_mode: service:gluetun
     healthcheck:
+      # You may want to use a domain here instead of the IP address for checking DNS resolution
       test: ping -c 1 8.8.8.8 || exit 1
       interval: 60s
       retries: 3
@@ -33,6 +48,7 @@ services:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
+    # No reason to define network unless you are planning to
     networks:
       internal:
         ipv4_address: 172.39.0.2
@@ -48,9 +64,11 @@ services:
       - VPN_PORT_FORWARDING=on
       # You may want to comment this line in order to setup username and password in qbittorrent for the first time
       - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'qbcli --retry --max-retries 0 --delay 30s --timeout 5m setListeningPort {{PORTS}}'
+      # Reaches out qibttorrent via host interface on the port exposed above
       - QBCLI_HOST_URL=http://127.0.0.1:8080
       - QBCLI_USERNAME=${QBCLI_USERNAME:-admin}
       - QBCLI_PASSWORD=${QBCLI_PASSWORD:?missing qbittorrent password}
+      - TZ=Etc/UTC
     restart: unless-stopped
     healthcheck:
       test: ping -c 1 www.google.com || exit 1
@@ -64,13 +82,9 @@ services:
     environment:
       - LOG_LEVEL=info
       - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
-      - TZ=${TZ}
+      - TZ=Etc/UTC
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-networks:
-  internal:
-    name: internal
-    ipam:
-      config:
-        - subnet: 172.39.0.0/24
+
+# Your services here...
