@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/gstos/qbcli/internal/qb/client"
 	"log/slog"
 	"net/url"
 	"os"
@@ -11,8 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gstos/qbcli/internal/qb/client"
 	"github.com/gstos/qbcli/internal/qb/cookiejar"
 	"github.com/gstos/qbcli/internal/qb/credentials"
+	"github.com/gstos/qbcli/internal/splistlog"
 )
 
 type Environment struct {
@@ -176,7 +177,24 @@ func (env *Environment) Logger() (*slog.Logger, error) {
 		return nil, fmt.Errorf("invalid log level: %w", err)
 	}
 
-	env.Log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: env.LogLevel}))
+	var handler slog.Handler
+	handlerOpts := &slog.HandlerOptions{Level: env.LogLevel}
+	if logLevel <= slog.LevelInfo {
+		splitter := splitslog.Splitter{
+			slog.LevelDebug: slog.NewTextHandler(os.Stdout, handlerOpts),
+			slog.LevelInfo:  slog.NewTextHandler(os.Stdout, handlerOpts),
+			slog.LevelWarn:  slog.NewTextHandler(os.Stderr, handlerOpts),
+			slog.LevelError: slog.NewTextHandler(os.Stderr, handlerOpts),
+		}
+		handler = splitslog.NewSplitHandler(splitter)
+	} else {
+		handler = slog.NewTextHandler(os.Stderr, handlerOpts)
+	}
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+
+	env.Log = logger
 	env.LogLevel.Set(logLevel)
 	return env.Log, nil
 }
