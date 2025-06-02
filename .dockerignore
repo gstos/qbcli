@@ -1,0 +1,15 @@
+# Ignore everything
+**
+
+# Allow go.mod and go.sum
+!go.mod
+!go.sum
+
+# Allow source code
+!*.go
+!cmd/**
+!internal/**
+
+# Allow README, LICENSE
+!README.md
+!LICENSE
