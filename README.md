@@ -78,7 +78,7 @@ Example `.env`:
 QBCLI_HOST=http://localhost:8080
 QBCLI_USERNAME=admin
 QBCLI_PASSWORD=adminadmin
-QBCLI_CACHE
+QBCLI_CACHE_DIR=~/.cache/qbcli
 ```
 
 Notice that command line arguments override environment settings.

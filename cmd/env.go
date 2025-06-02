@@ -51,7 +51,7 @@ func defaultHostURL() string {
 }
 
 func defaultCacheDir() string {
-	if envCacheDir := os.Getenv("QBCLI_CACHE"); envCacheDir != "" {
+	if envCacheDir := os.Getenv("QBCLI_CACHE_DIR"); envCacheDir != "" {
 		return envCacheDir
 	}
 

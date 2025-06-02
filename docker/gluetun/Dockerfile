@@ -1,28 +1,35 @@
+# ---- Build stage ----
 FROM golang:1.24 AS builder
 
-# Enable Go modules and set working directory
+ARG VERSION=dev
+ARG COMMIT=unknown
+ARG DATE=unknown
+
 WORKDIR /app
 
-# Copy go mod/sum and download dependencies first (cached layer)
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire source
 COPY . .
 
-# Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o qbcli ./main.go
+RUN CGO_ENABLED=0 GOOS=linux go build \
+  -ldflags="-s -w \
+  -X 'github.com/gstos/qbcli/internal/qb/version.Version=${VERSION}' \
+  -X 'github.com/gstos/qbcli/internal/qb/version.Commit=${COMMIT}' \
+  -X 'github.com/gstos/qbcli/internal/qb/version.Date=${DATE}'" \
+  -o qbcli ./main.go
 
-# You may want to pin down a specific version (e.g. v.3.40.0)
-FROM qmcgaw/gluetun:latest
+# ---- Final image ----
+# TODO: Using latest to include PRs that were deployed prior to a version release
+ARG GLUETUN_VERSION=latest
+FROM qmcgaw/gluetun:${GLUETUN_VERSION}
 
-COPY --from=builder /app/qbcli /usr/local/bin/qbcli
-RUN chmod +x /usr/local/bin/qbcli
+COPY --from=builder --chmod=755 /app/qbcli /usr/local/bin/qbcli
 
-RUN mkdir -p  /var/cache/qbcli
+RUN mkdir -p /var/cache/qbcli
 VOLUME /var/cache/qbcli
 
-ENV QBCLI_CACHE="/var/cache/qbcli" \
+ENV QBCLI_CACHE_DIR="/var/cache/qbcli" \
     QBCLI_HOST_URL="" \
     QBCLI_USERNAME="" \
     QBCLI_PASSWORD=""
