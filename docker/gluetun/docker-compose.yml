@@ -40,9 +40,10 @@ services:
       start_period: 20s
       timeout: 10s
   gluetun:
+    # image: ghcr.io/gstos/gluetun_qbcli:latest
     build:
+      context: ../..
       dockerfile: ./docker/gluetun/Dockerfile
-      context: .
     container_name: gluetun
     cap_add:
       - NET_ADMIN
@@ -63,7 +64,7 @@ services:
       - PORT_FORWARD_ONLY=on
       - VPN_PORT_FORWARDING=on
       # You may want to comment this line in order to setup username and password in qbittorrent for the first time
-      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'qbcli --retry --max-retries 0 --delay 30s --timeout 5m setListeningPort {{PORTS}}'
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'qbcli --log-level info --auth --retry --max-retries 0 --delay 30s --timeout 5m setListeningPort {{PORTS}}'
       # Reaches out qibttorrent via host interface on the port exposed above
       - QBCLI_HOST_URL=http://127.0.0.1:8080
       - QBCLI_USERNAME=${QBCLI_USERNAME:-admin}

@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"github.com/gstos/qbcli/internal/qb/version"
+	"github.com/spf13/cobra"
 )
 
 var rootEnv = Environment{
