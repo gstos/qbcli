@@ -40,7 +40,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            latest=true
+            type=raw,value=latest
           labels: |
             org.opencontainers.image.title=qbcli
             org.opencontainers.image.description=CLI tool to interact with qBittorrent WebUI
