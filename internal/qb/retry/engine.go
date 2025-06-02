@@ -224,10 +224,7 @@ func (eng *Engine) Run(ctx context.Context) error {
 			if isFatal {
 				return err
 			}
-			continue
-		}
-
-		if err, isFatal := eng.runFunc("doing", eng.Do); err == nil {
+		} else if err, isFatal = eng.runFunc("doing", eng.Do); err == nil {
 			return nil
 		} else {
 			eng.errors = append(eng.errors, err)
