@@ -1,3 +1,5 @@
+ARG GLUETUN_VERSION=latest
+
 # ---- Build stage ----
 FROM golang:1.24 AS builder
 
@@ -21,7 +23,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 
 # ---- Final image ----
 # TODO: Using latest to include PRs that were deployed prior to a version release
-ARG GLUETUN_VERSION=latest
 FROM qmcgaw/gluetun:${GLUETUN_VERSION}
 
 COPY --from=builder --chmod=755 /app/qbcli /usr/local/bin/qbcli
