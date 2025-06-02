@@ -211,7 +211,7 @@ func (eng *Engine) Run(ctx context.Context) error {
 
 	// Retry loop
 	for attempt := eng.curAttempt; attempt <= eng.maxRetries || eng.maxRetries == 0; attempt++ {
-		eng.Log = prevLog.With("ID", eng.ID, "retry", attempt, "maxRetries", eng.maxRetries)
+		eng.Log = prevLog.With("ID", eng.ID, "retry", attempt, "maxRetries", eng.maxRetries, "delay", eng.retryDelay)
 		eng.curAttempt = attempt
 
 		if err := eng.Wait(0); err != nil {
