@@ -87,7 +87,7 @@ Notice that command line arguments override environment settings.
 
 `qbcli` uses session cookies and caches them to avoid logging in on every request. Cookies are stored (if enabled) in a local cache directory.
 
-## 🐳 Running Behind VPN (e.g., ProtonVPN + Gluetun)
+## Running Behind VPN (e.g., ProtonVPN + Gluetun)
 
 1. Run qBittorrent behind a VPN container (e.g. [`gluetun`](https://github.com/qdm12/gluetun)).
 2. Use `qbcli` from a sidecar container or via `docker exec`.
@@ -120,7 +120,7 @@ Versioning and pre-compiled binaries to be implemented in this repository soon.
 
 ## License
 
-MIT
+MIT © 2025 gstos
 
 ## Disclaimers
 
